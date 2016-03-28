@@ -6,7 +6,6 @@
 package neurop2;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  *
@@ -22,11 +21,24 @@ public class RedNeuronal {
     	this.numSalidas = numSalidas;
     	Capa capaAux = null;
     	ArrayList<Neurona> neuronas = new ArrayList<>();
+    	for(int i =0; i<numEntradas; i++){
+    		double peso = Math.random() * 0.5;
+        	double sesgo = Math.random() * 0.5;
+        	ArrayList<Double> entradas = new ArrayList<>();
+        	entradas.add(0.0);
+    		Neurona neurona = new Neurona(entradas,peso, sesgo);
+    		neuronas.add(neurona);
+    	}
+    	capaAux = new Capa(neuronas);
+    	capas.add(capaAux);
+    	
+    	capaAux = null;
+    	neuronas = new ArrayList<>();
     	for(int i =0; i<numCapaOculta; i++){
     		double peso = Math.random() * 0.5;
         	double sesgo = Math.random() * 0.5;
         	ArrayList<Double> entradas = new ArrayList<>();
-        	for(int j =0; i<numEntradas; i++){
+        	for(int j =0; j<numEntradas; j++){
         		entradas.add(0.0);
         	}
     		Neurona neurona = new Neurona(entradas,peso, sesgo);
@@ -41,7 +53,7 @@ public class RedNeuronal {
     		double peso = Math.random() * 0.5;
         	double sesgo = Math.random() * 0.5;
         	ArrayList<Double> entradas = new ArrayList<>();
-        	for(int j =0; i<numCapaOculta; i++){
+        	for(int j =0; j<numCapaOculta; j++){
         		entradas.add(0.0);
         	}
     		Neurona neurona = new Neurona(entradas,peso, sesgo);
@@ -71,59 +83,46 @@ public class RedNeuronal {
     	}
     	
     	//Actualizamos la primera capa
-    	for(int index = 0; index < entradasAux.size(); index++){
+    	for(int index = 0; index < numEntradas; index++){
     		nuevasEntradas = new ArrayList<Double>();
     		nuevasEntradas.add(entradasAux.get(index));
     		capas.get(0).setEntradasNeurona(nuevasEntradas, index);
     	}
-    	
+    	/*
+    	 * 
+    	 * Calculamos las nuevas salidas para la capa 1 con el algoritmo
+    	 * 
+    	 */
     	//Actualizamos la segunda capa
     	ArrayList<Double> salidasAux = capas.get(0).getSalidas();
     	for(int index = 0; index < numCapaOculta; index ++){
     		nuevasEntradas = new ArrayList<Double>();
-    		
+    		for(double salida : salidasAux){
+    			nuevasEntradas.add(salida);
+    		}
+    		capas.get(1).setEntradasNeurona(nuevasEntradas, index);
     	}
-    	
-    	nuevasEntradas.add(entradasAux.get(2));
-    	nuevasEntradas.add(salidasAux.get(0));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 0);
-    	nuevasEntradas = new ArrayList<Integer>();
-    	nuevasEntradas.add(entradasAux.get(0));
-    	nuevasEntradas.add(salidasAux.get(1));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 1);
-    	nuevasEntradas = new ArrayList<Integer>();
-    	nuevasEntradas.add(entradasAux.get(1));
-    	nuevasEntradas.add(salidasAux.get(2));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 2);
-    	    	
-    	nuevasEntradas = new ArrayList<Integer>();
-    	nuevasEntradas.add(entradasAux.get(1));
-    	nuevasEntradas.add(salidasAux.get(0));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 3);
-    	nuevasEntradas = new ArrayList<Integer>();
-    	nuevasEntradas.add(entradasAux.get(2));
-    	nuevasEntradas.add(salidasAux.get(1));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 4);
-    	nuevasEntradas = new ArrayList<Integer>();
-    	nuevasEntradas.add(entradasAux.get(0));
-    	nuevasEntradas.add(salidasAux.get(2));
-    	capas.get(1).setEntradasNeurona(nuevasEntradas, 5);
-    	
-    	//Actualizamos la tercera capa
-    	
-    	nuevasEntradas = new ArrayList<>();
-    	salidasAux = new ArrayList<>();
+    	/*
+    	 * 
+    	 * Calculamos las nuevas salidas para la capa 2 con el algoritmo
+    	 * 
+    	 */
     	salidasAux = capas.get(1).getSalidas();
-    	nuevasEntradas.add(salidasAux.get(0));
-    	nuevasEntradas.add(salidasAux.get(1));
-    	nuevasEntradas.add(salidasAux.get(2));
-    	capas.get(2).setEntradasNeurona(nuevasEntradas, 0);
     	
-    	nuevasEntradas = new ArrayList<>();
-    	nuevasEntradas.add(salidasAux.get(3));
-    	nuevasEntradas.add(salidasAux.get(4));
-    	nuevasEntradas.add(salidasAux.get(5));
-    	capas.get(2).setEntradasNeurona(nuevasEntradas, 1);   	
+    	for(int index = 0; index < numSalidas; index++){
+    		nuevasEntradas = new ArrayList<>();
+    		for(Double salida : salidasAux){
+    			nuevasEntradas.add(salida);
+    		}
+    		capas.get(2).setEntradasNeurona(nuevasEntradas, index);
+    	}
+    	/*
+    	 * 
+    	 * Calculamos las nuevas salidas para la capa 1 con el algoritmo
+    	 * Y a partir de aqui retropropagacion
+    	 * 
+    	 */
+    	
     }
     
     public String getSalidaFinal(){
