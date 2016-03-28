@@ -12,35 +12,27 @@ import java.util.ArrayList;
  * @author Jose
  */
 public class Neurona {
-    private ArrayList<Integer> entrada = null;
-    private int salida;
-    private int umbral;
-    private int peso;
+    private ArrayList<Double> entrada = null;
+    private double salida;
+    private double peso;
+    private double sesgo;
     
-    public Neurona(ArrayList<Integer> entrada, int umbral, int peso){
+    public Neurona(ArrayList<Double> entrada, double peso, double sesgo){
     	this.entrada = entrada;
     	this.peso = peso;
     	this.salida = 0;
-    	this.umbral = umbral;
+    	this.sesgo = sesgo;
     }
 
     public void calcularSalida(){
-    	int acumulado = 0;
-    	for(int entrada : this.entrada){
-    		acumulado += entrada * peso;
-    	}
-    	if(acumulado<umbral){
-    		salida = 0;
-    	}else{
-    		salida = 1;
-    	}
+    	
     }
     
-    public int getSalida(){
+    public double getSalida(){
     	return this.salida;
     }
     
-    public void setEntrada(ArrayList<Integer> entrada){
+    public void setEntrada(ArrayList<Double> entrada){
     	this.entrada = entrada;
     }
 }

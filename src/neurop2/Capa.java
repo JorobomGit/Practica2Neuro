@@ -24,8 +24,8 @@ public class Capa {
     	}
     }
     
-    public ArrayList<Integer> getSalidas(){
-    	ArrayList<Integer> salidas = new ArrayList<Integer>();
+    public ArrayList<Double> getSalidas(){
+    	ArrayList<Double> salidas = new ArrayList<>();
     	for(Neurona neurona : neuronas){
     		salidas.add(neurona.getSalida());
     	}
@@ -35,7 +35,7 @@ public class Capa {
     public String salidasToString(){
     	String respuesta="";
     	for(int i = 0; i<neuronas.size();i++){
-    		respuesta += Integer.toString(neuronas.get(i).getSalida());
+    		respuesta += Double.toString(neuronas.get(i).getSalida());
     		if(i != (neuronas.size()-1)){
     			respuesta += " ";
     		}
@@ -43,7 +43,7 @@ public class Capa {
     	return respuesta;
     }
     
-    public void setEntradasNeurona(ArrayList<Integer> entradas, int index){
+    public void setEntradasNeurona(ArrayList<Double> entradas, int index){
     	neuronas.get(index).setEntrada(entradas);
     }
     

@@ -6,6 +6,7 @@
 package neurop2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -13,21 +14,22 @@ import java.util.ArrayList;
  */
 public class RedNeuronal {
     private ArrayList<Capa> capas = new ArrayList<>();
+    private int numEntradas, numCapaOculta, numSalidas;
 
-    public RedNeuronal(int numEntradas, int numSalidas) {
+    public RedNeuronal(int numEntradas, int numCapaOculta, int numSalidas) {
+    	this.numEntradas = numEntradas;
+    	this.numCapaOculta = numCapaOculta;
+    	this.numSalidas = numSalidas;
     	Capa capaAux = null;
     	ArrayList<Neurona> neuronas = new ArrayList<>();
-    	for(int i =0; i<numEntradas; i++){
-    		Neurona neurona = new Neurona();
-    		neuronas.add(neurona);
-    	}
-    	capaAux = new Capa(neuronas);
-    	capas.add(capaAux);
-    	
-    	capaAux = null;
-    	neuronas = new ArrayList<>();
-    	for(int i =0; i<numEntradas*2; i++){
-    		Neurona neurona = new Neurona();
+    	for(int i =0; i<numCapaOculta; i++){
+    		double peso = Math.random() * 0.5;
+        	double sesgo = Math.random() * 0.5;
+        	ArrayList<Double> entradas = new ArrayList<>();
+        	for(int j =0; i<numEntradas; i++){
+        		entradas.add(0.0);
+        	}
+    		Neurona neurona = new Neurona(entradas,peso, sesgo);
     		neuronas.add(neurona);
     	}
     	capaAux = new Capa(neuronas);
@@ -36,7 +38,13 @@ public class RedNeuronal {
     	capaAux = null;
     	neuronas = new ArrayList<>();
     	for(int i =0; i<numSalidas; i++){
-    		Neurona neurona = new Neurona();
+    		double peso = Math.random() * 0.5;
+        	double sesgo = Math.random() * 0.5;
+        	ArrayList<Double> entradas = new ArrayList<>();
+        	for(int j =0; i<numCapaOculta; i++){
+        		entradas.add(0.0);
+        	}
+    		Neurona neurona = new Neurona(entradas,peso, sesgo);
     		neuronas.add(neurona);
     	}
     	capaAux = new Capa(neuronas);
@@ -54,29 +62,28 @@ public class RedNeuronal {
     	}
     }
     
-    public void impulsoFinal(String linea){
-    	this.impulso(linea);
-    	System.out.println(this.getSalidaFinal());
-    }
-    
     private void actualizarEntradas(String entradas){
     	String entrada[] = entradas.split(" ");
-    	ArrayList<Integer> entradasAux = new ArrayList<>();
-    	ArrayList<Integer> nuevasEntradas = null;
+    	ArrayList<Double> entradasAux = new ArrayList<>();
+    	ArrayList<Double> nuevasEntradas = null;
     	for(String aux : entrada){
-    		entradasAux.add(Integer.parseInt(aux));
+    		entradasAux.add(Double.parseDouble(aux));
     	}
     	
     	//Actualizamos la primera capa
     	for(int index = 0; index < entradasAux.size(); index++){
-    		nuevasEntradas = new ArrayList<Integer>();
+    		nuevasEntradas = new ArrayList<Double>();
     		nuevasEntradas.add(entradasAux.get(index));
     		capas.get(0).setEntradasNeurona(nuevasEntradas, index);
     	}
     	
     	//Actualizamos la segunda capa
-    	ArrayList<Integer> salidasAux = capas.get(0).getSalidas();
-    	nuevasEntradas = new ArrayList<Integer>();
+    	ArrayList<Double> salidasAux = capas.get(0).getSalidas();
+    	for(int index = 0; index < numCapaOculta; index ++){
+    		nuevasEntradas = new ArrayList<Double>();
+    		
+    	}
+    	
     	nuevasEntradas.add(entradasAux.get(2));
     	nuevasEntradas.add(salidasAux.get(0));
     	capas.get(1).setEntradasNeurona(nuevasEntradas, 0);
