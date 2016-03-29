@@ -22,11 +22,12 @@ public class RedNeuronal {
     	Capa capaAux = null;
     	ArrayList<Neurona> neuronas = new ArrayList<>();
     	for(int i =0; i<numEntradas; i++){
-    		double peso = Math.random() * 0.5;
+        	ArrayList<Double> pesos = new ArrayList<>();
+    		pesos.add(Math.random() * 0.5);
         	double sesgo = Math.random() * 0.5;
         	ArrayList<Double> entradas = new ArrayList<>();
         	entradas.add(0.0);
-    		Neurona neurona = new Neurona(entradas,peso, sesgo);
+    		Neurona neurona = new Neurona(entradas,pesos, sesgo);
     		neuronas.add(neurona);
     	}
     	capaAux = new Capa(neuronas);
@@ -35,13 +36,14 @@ public class RedNeuronal {
     	capaAux = null;
     	neuronas = new ArrayList<>();
     	for(int i =0; i<numCapaOculta; i++){
-    		double peso = Math.random() * 0.5;
+    		ArrayList<Double> pesos = new ArrayList<>();
         	double sesgo = Math.random() * 0.5;
         	ArrayList<Double> entradas = new ArrayList<>();
         	for(int j =0; j<numEntradas; j++){
+        		pesos.add(Math.random() * 0.5);
         		entradas.add(0.0);
         	}
-    		Neurona neurona = new Neurona(entradas,peso, sesgo);
+    		Neurona neurona = new Neurona(entradas,pesos, sesgo);
     		neuronas.add(neurona);
     	}
     	capaAux = new Capa(neuronas);
@@ -50,13 +52,14 @@ public class RedNeuronal {
     	capaAux = null;
     	neuronas = new ArrayList<>();
     	for(int i =0; i<numSalidas; i++){
-    		double peso = Math.random() * 0.5;
+    		ArrayList<Double> pesos = new ArrayList<>();
         	double sesgo = Math.random() * 0.5;
         	ArrayList<Double> entradas = new ArrayList<>();
         	for(int j =0; j<numCapaOculta; j++){
+        		pesos.add(Math.random() * 0.5);
         		entradas.add(0.0);
         	}
-    		Neurona neurona = new Neurona(entradas,peso, sesgo);
+    		Neurona neurona = new Neurona(entradas,pesos, sesgo);
     		neuronas.add(neurona);
     	}
     	capaAux = new Capa(neuronas);

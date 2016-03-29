@@ -14,10 +14,10 @@ import java.util.ArrayList;
 public class Neurona {
     private ArrayList<Double> entrada = null;
     private double salida;
-    private double peso;
+    private ArrayList<Double> peso = null;
     private double sesgo;
     
-    public Neurona(ArrayList<Double> entrada, double peso, double sesgo){
+    public Neurona(ArrayList<Double> entrada, ArrayList<Double> peso, double sesgo){
     	this.entrada = entrada;
     	this.peso = peso;
     	this.salida = 0;
