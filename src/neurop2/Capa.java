@@ -14,13 +14,19 @@ import java.util.ArrayList;
 public class Capa {
     private ArrayList<Neurona> neuronas = new ArrayList<>();
 
-    public Capa(ArrayList<Neurona> neuronas) {
+    public ArrayList<Neurona> getNeuronas() {
+        return neuronas;
+    }
+    private double sesgo;
+
+    public Capa(ArrayList<Neurona> neuronas, double sesgo) {
         this.neuronas = neuronas;
+        this.sesgo = sesgo;
     }
 
     public void actualizarCapa(){
     	for(Neurona neurona : neuronas){
-    		neurona.calcularSalida();
+    		neurona.calcularSalida(sesgo);
     	}
     }
     
@@ -45,6 +51,19 @@ public class Capa {
     
     public void setEntradasNeurona(ArrayList<Double> entradas, int index){
     	neuronas.get(index).setEntrada(entradas);
+    }
+    
+    /*Establecemos activaciones en la capa*/
+    public void setSalidas(String[] salidas){
+        for(int i=0; i<this.neuronas.size();i++){
+            this.neuronas.get(i).setSalida(Double.parseDouble(salidas[i]));
+        }
+    }
+    
+    public void setSalidas(ArrayList<Double> salidas){
+        for(int i=0; i<this.neuronas.size();i++){
+            this.neuronas.get(i).setSalida(salidas.get(i));
+        }
     }
     
 }
