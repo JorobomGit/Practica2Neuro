@@ -48,6 +48,16 @@ public class Neurona {
     	salida = sesgo + sumatorio;
     }
     
+    public void calcularSalidasExplotacion(){
+    	double sumatorio=0;
+        for(int i=0; i<peso.size();i++){
+            sumatorio+=peso.get(i)*entrada.get(i);
+        }
+    	double z_in = sesgo + sumatorio;
+    	double divisor = 1 + Math.exp(-z_in);
+    	salida = (2/divisor) - 1;
+    }
+    
     public double getSalida(){
     	return this.salida;
     }

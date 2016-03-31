@@ -301,4 +301,36 @@ public class RedNeuronal {
             this.capas.get(1).getNeuronas().get(i).setSesgo(sesgo + correccionSesgo.get(i));
         }
     }
+    
+    public void explotacionEntrada(String entrada){
+    	String linea[] = entrada.split("");
+    	int numNeuronas = this.capas.get(0).getNeuronas().size();
+    	for(int i = 0; i < numNeuronas; i++){
+    		double entradaNueva = Double.parseDouble(linea[i]);
+    		ArrayList<Double> entradasNuevas = new ArrayList<>();
+    		entradasNuevas.add(entradaNueva);
+    		this.capas.get(0).getNeuronas().get(0).setEntrada(entradasNuevas);
+    	}
+    }
+    
+    public void explotacionCapaOculta(){
+    	ArrayList<Neurona> neuronasCEntrada = this.capas.get(0).getNeuronas();
+    	int numNeuronasOcultas = this.capas.get(1).getNeuronas().size();
+    	for(int i = 0; i < numNeuronasOcultas; i++){
+    		ArrayList<Double> nuevasEntradas = new ArrayList<>();
+    		for(int j = 0; j < neuronasCEntrada.size(); j++){
+    			nuevasEntradas.add(neuronasCEntrada.get(j).getSalida());
+    		}
+    		this.capas.get(1).getNeuronas().get(i).setEntrada(nuevasEntradas);
+    		this.capas.get(1).calculoSalidasExplotacion();
+    	}
+    }
+    
+    public void explotacionCapaSalida(){
+    	ArrayList<Double> nuevasEntradas = this.capas.get(1).getSalidas();
+    	for(int i = 0; i < this.capas.get(2).getNeuronas().size(); i++){
+    		this.capas.get(2).getNeuronas().get(i).setEntrada(nuevasEntradas);
+    		this.capas.get(2).calculoSalidasExplotacion();
+    	}
+    }
 }

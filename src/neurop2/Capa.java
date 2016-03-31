@@ -66,4 +66,10 @@ public class Capa {
         }
     }
     
+    public void calculoSalidasExplotacion(){
+    	for(Neurona neurona : this.neuronas){
+    		neurona.calcularSalidasExplotacion();
+    	}
+    }
+    
 }
