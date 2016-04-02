@@ -5,9 +5,11 @@
  */
 package neurop2;
 
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class NeuroEj21 {
 
@@ -18,7 +20,6 @@ public class NeuroEj21 {
         int training = 80;
         int tasa = 1;
         String ocultas = "5";
-        String salida = "salida.txt";
 
         System.out.println(args.length);
         if (args.length == 0) {
@@ -39,9 +40,10 @@ public class NeuroEj21 {
             try {
                 FileReader f = new FileReader(entrada); //Abrimos fichero
                 BufferedReader b = new BufferedReader(f);
-                String linea = "", lineaFinal = "";
+                String linea = "";
                 linea = b.readLine();
                 String[] params = linea.split(" ");
+                List<String> datos = new ArrayList<>();
                 int numEntradas = Integer.parseInt(params[0]);
                 int numSalidas = Integer.parseInt(params[1]);
                 int numCapaOculta = Integer.parseInt(ocultas);
@@ -49,13 +51,30 @@ public class NeuroEj21 {
                 System.out.println("Numero de neuronas oculta: " + numSalidas);
                 System.out.println("Numero de neuronas salida: " + numCapaOculta);
                 RedNeuronal red = new RedNeuronal(numEntradas, numCapaOculta, numSalidas, tasa);
-                /*Condicion de parada*/
+                linea = b.readLine();
                 while ((linea = b.readLine()) != null) {
+                	datos.add(linea);
+                }
+                double porcentaje = training/100.0;
+                int numTrain = (int)(datos.size() * porcentaje);
+                int numTest = datos.size() - numTrain;
+                Collections.shuffle(datos);
+                String datosTrain[] = new String[numTrain];
+                String datosTest[] = new String[numTest];
+                for(int index = 0; index < numTrain; index++){
+                	datosTrain[index] = datos.get(index);
+                }
+                for(int contador = 0, index = numTrain; contador < numTest; contador++, index++){
+                	datosTest[contador] = datos.get(index);
+                }
+                /*Condicion de parada*/
+                for(int i = 0; i < datosTrain.length; i++) {
+                	
                     /*En este punto tenemos la red neuronal creada*/
                     /*****FEEDFORWARD*****/
                     /*Comienza el algoritmo con la primera tupla del fichero*/
                     /*Paso 3: Establecer activaciones a neuronas de entrada*/
-                    red.activarCapaEntrada(linea);
+                    red.activarCapaEntrada(datosTrain[i]);
                     red.actualizarEntradasCapaOculta();
                     /*Paso 4: Calcular respuesta de neuronas capa oculta*/
                     red.respuestasCapaOculta();
@@ -66,7 +85,7 @@ public class NeuroEj21 {
                     /*****RETROPROPAGACION DEL ERROR*****/
                     /*Paso 6: Calculamos error, necesitamos obtener la clase de entrenamiento*/
                     ArrayList<Double> errores = red.calcularErroresSalida();
-                    System.out.println(linea);
+                    System.out.println(datosTrain[i]);
                     /*Calcular correcciones de peso*/
                     ArrayList<Double> correcciones1 = red.correccionPesosSalida(errores);
                     /*Calcular correcciones sesgo*/
@@ -86,7 +105,36 @@ public class NeuroEj21 {
                     
                     /*Paso 9: Condicion de parada*/
                 }
+                
+                // Fase de clasificacion
+                int errores = 0;
+                for(int i = 0; i < numTest; i++){
+                	String aux[] = datosTest[i].split(" ");
+                	String entradas = "";
+                	String claseReal = "";
+                	for(int j = 0; j < numEntradas; j++){
+                		entradas += aux[j] + " ";
+                	}
+                	for(int index = numEntradas, j = 0; j < numSalidas; j++, index++){
+                		if(j == (numSalidas - 1)){
+                			claseReal += aux[index];
+                		}else{
+                    		claseReal += aux[index] + " ";
+                		}
+                	}
+                	red.explotacionEntrada(entradas);
+                	red.explotacionCapaOculta();
+                	red.explotacionCapaSalida();
+                	String clasePred = red.getSalidaFinal();
+                	if(!clasePred.equals(claseReal)){
+                		errores++;
+                	}
+                }
+                double error = errores / numTrain;
+                System.out.println("Error: " + error);
                 b.close();
+                f.close();
+                
             } catch (Exception e) {
                 System.out.println("Error leyendo el fichero.");
                 e.printStackTrace();

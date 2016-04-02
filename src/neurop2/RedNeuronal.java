@@ -140,7 +140,16 @@ public class RedNeuronal {
     }
 
     public String getSalidaFinal() {
-        return capas.get(2).salidasToString();
+        ArrayList<Double> salidas = this.capas.get(2).getSalidas();
+        String salida = "";
+        for(int i = 0; i < salidas.size(); i++){
+        	if(i < (salidas.size() - 1)){
+        		salida += salidas.get(i).toString() + " ";
+        	}else{
+        		salida += salidas.get(i).toString();
+        	}
+        }
+        return salida;
     }
 
     public void activarCapaEntrada(String activaciones) {
@@ -303,13 +312,13 @@ public class RedNeuronal {
     }
     
     public void explotacionEntrada(String entrada){
-    	String linea[] = entrada.split("");
+    	String linea[] = entrada.split(" ");
     	int numNeuronas = this.capas.get(0).getNeuronas().size();
     	for(int i = 0; i < numNeuronas; i++){
     		double entradaNueva = Double.parseDouble(linea[i]);
     		ArrayList<Double> entradasNuevas = new ArrayList<>();
     		entradasNuevas.add(entradaNueva);
-    		this.capas.get(0).getNeuronas().get(0).setEntrada(entradasNuevas);
+    		this.capas.get(0).getNeuronas().get(i).setEntrada(entradasNuevas);
     	}
     }
     
