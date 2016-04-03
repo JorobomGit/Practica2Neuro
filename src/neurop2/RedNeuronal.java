@@ -27,19 +27,21 @@ public class RedNeuronal {
         this.tasa = tasa;
         Capa capaAux = null;
         ArrayList<Neurona> neuronas = new ArrayList<>();
+        double sesgo;
         /*Capa de entrada*/
         for (int i = 0; i < numEntradas; i++) {
             /*Inicializamos pesos y sesgo a valores pequenos*/
             ArrayList<Double> pesos = new ArrayList<>();
-            pesos.add(Math.random() * 0.5);
+            //pesos.add(-0.5 + (Math.random() * 0.5));
 
             ArrayList<Double> entradas = new ArrayList<>();
             entradas.add(0.0);
-            Neurona neurona = new Neurona(entradas, pesos);
+            sesgo = Math.random() + -0.5;
+            Neurona neurona = new Neurona(entradas, pesos, sesgo);
             neuronas.add(neurona);
         }
-        double sesgo = Math.random() * 0.5;
-        capaAux = new Capa(neuronas, sesgo);
+        
+        capaAux = new Capa(neuronas);
         capas.add(capaAux);
 
         capaAux = null;
@@ -49,14 +51,15 @@ public class RedNeuronal {
             ArrayList<Double> pesos = new ArrayList<>();
             ArrayList<Double> entradas = new ArrayList<>();
             for (int j = 0; j < numEntradas; j++) {
-                pesos.add(Math.random() * 0.5);
+                pesos.add(-0.5 + (Math.random()));
                 entradas.add(0.0);
             }
-            Neurona neurona = new Neurona(entradas, pesos);
+            sesgo = -0.5 + Math.random();
+            Neurona neurona = new Neurona(entradas, pesos, sesgo);
             neuronas.add(neurona);
         }
-        sesgo = Math.random() * 0.5;
-        capaAux = new Capa(neuronas, sesgo);
+
+        capaAux = new Capa(neuronas);
         capas.add(capaAux);
 
         capaAux = null;
@@ -66,15 +69,20 @@ public class RedNeuronal {
             ArrayList<Double> pesos = new ArrayList<>();
             ArrayList<Double> entradas = new ArrayList<>();
             for (int j = 0; j < numCapaOculta; j++) {
-                pesos.add(Math.random() * 0.5);
+                pesos.add(-0.5 + (Math.random()));
                 entradas.add(0.0);
             }
-            Neurona neurona = new Neurona(entradas, pesos);
+            sesgo = Math.random() + -0.5;
+            Neurona neurona = new Neurona(entradas, pesos, sesgo);
             neuronas.add(neurona);
         }
-        sesgo = Math.random() * 0.5;
-        capaAux = new Capa(neuronas, sesgo);
+
+        capaAux = new Capa(neuronas);
         capas.add(capaAux);
+    }
+
+    public ArrayList<Capa> getCapas() {
+        return capas;
     }
 
     //Metodo que actualiza todos los valores de las neuronas para un nuevo impulso
@@ -142,12 +150,26 @@ public class RedNeuronal {
     public String getSalidaFinal() {
         ArrayList<Double> salidas = this.capas.get(2).getSalidas();
         String salida = "";
-        for(int i = 0; i < salidas.size(); i++){
-        	if(i < (salidas.size() - 1)){
-        		salida += salidas.get(i).toString() + " ";
-        	}else{
-        		salida += salidas.get(i).toString();
-        	}
+        double mayor = 0;
+        int indice = 0;
+        /*Calculamos clase equivalente tomando el mayor valor*/
+        System.out.println("Clase bruta: " + salidas);
+        for (int i = 0; i < salidas.size(); i++) {
+            if (mayor < salidas.get(i)) {
+                mayor = salidas.get(i);
+                indice = i;
+            }
+        }
+        /*Construimos la clase*/
+        for (int i = 0; i < salidas.size(); i++) {
+            if (i == indice) {
+                salida += '1';
+            } else {
+                salida += '0';
+            }
+            if (i != salidas.size() - 1) {
+                salida += " ";
+            }
         }
         return salida;
     }
@@ -163,6 +185,7 @@ public class RedNeuronal {
         for (int i = this.numEntradas; i < (this.numEntradas + this.numSalidas); i++) {
             patron.add(Double.parseDouble(valores[i]));
         }
+        this.actualizarEntradasCapaOculta();
     }
 
     /*Metodo para actualizar las entradas de la capa oculta*/
@@ -185,9 +208,11 @@ public class RedNeuronal {
         for (int i = 0; i < numCapaOculta; i++) {
             /*Para cada neurona obtenemos respuesta*/
  /*La funcion de transferencia es la sigmoide bipolar*/
+
             respuestas.add(sigmoideBipolar(this.capas.get(1).getSalidas().get(i)));
         }
         this.capas.get(1).setSalidas(respuestas);
+        this.actualizarEntradasCapaSalida();
     }
 
     /*Metodo para actualizar las entradas de la capa oculta*/
@@ -215,7 +240,7 @@ public class RedNeuronal {
         this.capas.get(2).setSalidas(respuestas);
     }
 
-    public Double sigmoideBipolar(Double x) {
+    public double sigmoideBipolar(Double x) {
         return (2 / (1 + Math.exp(-x))) - 1;
     }
 
@@ -230,7 +255,7 @@ public class RedNeuronal {
         return errores;
     }
 
-    public Double derivadaSigmoideBipolar(Double x) {
+    public double derivadaSigmoideBipolar(Double x) {
         return 0.5 * (1 + sigmoideBipolar(x)) * (1 - sigmoideBipolar(x));
     }
 
@@ -292,6 +317,9 @@ public class RedNeuronal {
             for (int j = 0; j < numCapaOculta; j++) {
                 pesosNuevos.add(pesos.get(j) + correccionPesos.get(j));
             }
+            if(i==0)
+            System.out.println("Evolucion Pesos Salida" + i +":"  + pesosNuevos);
+            
             this.capas.get(2).getNeuronas().get(i).setPesos(pesosNuevos);
             this.capas.get(2).getNeuronas().get(i).setSesgo(sesgo + correccionSesgo.get(i));
         }
@@ -310,36 +338,41 @@ public class RedNeuronal {
             this.capas.get(1).getNeuronas().get(i).setSesgo(sesgo + correccionSesgo.get(i));
         }
     }
-    
-    public void explotacionEntrada(String entrada){
-    	String linea[] = entrada.split(" ");
-    	int numNeuronas = this.capas.get(0).getNeuronas().size();
-    	for(int i = 0; i < numNeuronas; i++){
-    		double entradaNueva = Double.parseDouble(linea[i]);
-    		ArrayList<Double> entradasNuevas = new ArrayList<>();
-    		entradasNuevas.add(entradaNueva);
-    		this.capas.get(0).getNeuronas().get(i).setEntrada(entradasNuevas);
-    	}
+
+    public void explotacionEntrada(String entrada) {
+        String linea[] = entrada.split(" ");
+        for (int i = 0; i < this.numEntradas; i++) {
+            this.capas.get(0).setSalidas(linea);
+        }
+        this.actualizarEntradasCapaOculta();
+    }
+
+    public void explotacionCapaOculta() {
+        ArrayList<Neurona> neuronasCEntrada = this.capas.get(0).getNeuronas();
+        int numNeuronasOcultas = this.capas.get(1).getNeuronas().size();
+        for (int i = 0; i < numNeuronasOcultas; i++) {
+            ArrayList<Double> nuevasEntradas = new ArrayList<>();
+            for (int j = 0; j < neuronasCEntrada.size(); j++) {
+                nuevasEntradas.add(neuronasCEntrada.get(j).getSalida());
+            }
+            this.capas.get(1).getNeuronas().get(i).setEntrada(nuevasEntradas);
+            this.capas.get(1).calculoSalidasExplotacion();
+        }
+    }
+
+    public void explotacionCapaSalida() {
+        ArrayList<Double> nuevasEntradas = this.capas.get(1).getSalidas();
+        for (int i = 0; i < this.capas.get(2).getNeuronas().size(); i++) {
+            this.capas.get(2).getNeuronas().get(i).setEntrada(nuevasEntradas);
+            this.capas.get(2).calculoSalidasExplotacion();
+        }
     }
     
-    public void explotacionCapaOculta(){
-    	ArrayList<Neurona> neuronasCEntrada = this.capas.get(0).getNeuronas();
-    	int numNeuronasOcultas = this.capas.get(1).getNeuronas().size();
-    	for(int i = 0; i < numNeuronasOcultas; i++){
-    		ArrayList<Double> nuevasEntradas = new ArrayList<>();
-    		for(int j = 0; j < neuronasCEntrada.size(); j++){
-    			nuevasEntradas.add(neuronasCEntrada.get(j).getSalida());
-    		}
-    		this.capas.get(1).getNeuronas().get(i).setEntrada(nuevasEntradas);
-    		this.capas.get(1).calculoSalidasExplotacion();
-    	}
-    }
-    
-    public void explotacionCapaSalida(){
-    	ArrayList<Double> nuevasEntradas = this.capas.get(1).getSalidas();
-    	for(int i = 0; i < this.capas.get(2).getNeuronas().size(); i++){
-    		this.capas.get(2).getNeuronas().get(i).setEntrada(nuevasEntradas);
-    		this.capas.get(2).calculoSalidasExplotacion();
-    	}
+    public double errorCuadratico(){
+        double sumatorio=0;
+        for(int i=0;i<numSalidas;i++){
+            sumatorio += Math.pow(this.patron.get(i)-this.capas.get(2).getSalidas().get(i),2);
+        }
+        return 0.5*sumatorio;
     }
 }

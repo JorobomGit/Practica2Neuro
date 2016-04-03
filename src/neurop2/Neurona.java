@@ -17,11 +17,11 @@ public class Neurona {
     private ArrayList<Double> peso = null;
     private double sesgo;
     
-    public Neurona(ArrayList<Double> entrada, ArrayList<Double> peso){
+    public Neurona(ArrayList<Double> entrada, ArrayList<Double> peso, double sesgo){
     	this.entrada = entrada;
     	this.peso = peso;
     	this.salida = 0;
-        this.sesgo = 1;
+        this.sesgo = sesgo;
     }
 
     public double getSesgo() {
@@ -40,7 +40,7 @@ public class Neurona {
         this.peso = peso;
     }
 
-    public void calcularSalida(double sesgo){
+    public void calcularSalida(){
         double sumatorio=0;
         for(int i=0; i<peso.size();i++){
             sumatorio+=peso.get(i)*entrada.get(i);
