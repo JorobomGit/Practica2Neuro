@@ -81,6 +81,7 @@ public class RedNeuronal {
         capas.add(capaAux);
     }
 
+
     public ArrayList<Capa> getCapas() {
         return capas;
     }
@@ -150,10 +151,10 @@ public class RedNeuronal {
     public String getSalidaFinal() {
         ArrayList<Double> salidas = this.capas.get(2).getSalidas();
         String salida = "";
-        double mayor = 0;
+        double mayor = -1;
         int indice = 0;
         /*Calculamos clase equivalente tomando el mayor valor*/
-        System.out.println("Clase bruta: " + salidas);
+        ////System.out.println("Salidas: " + salidas);
         for (int i = 0; i < salidas.size(); i++) {
             if (mayor < salidas.get(i)) {
                 mayor = salidas.get(i);
@@ -171,6 +172,7 @@ public class RedNeuronal {
                 salida += " ";
             }
         }
+        ////System.out.println("Clase final: " + salida);
         return salida;
     }
 
@@ -181,9 +183,14 @@ public class RedNeuronal {
         for (int i = 0; i < this.numEntradas; i++) {
             this.capas.get(0).setSalidas(valores);
         }
+        patron = new ArrayList<>();
         /*Aprovechamos y obtenemos el patron*/
         for (int i = this.numEntradas; i < (this.numEntradas + this.numSalidas); i++) {
-            patron.add(Double.parseDouble(valores[i]));
+            if (Double.parseDouble(valores[i]) == 0) {
+                patron.add(-1.0);
+            } else {
+                patron.add(Double.parseDouble(valores[i]));
+            }
         }
         this.actualizarEntradasCapaOculta();
     }
@@ -203,6 +210,7 @@ public class RedNeuronal {
         this.capas.get(1).actualizarCapa();
         /*Guardamos de forma auxiliar y_in*/
         this.z_in_aux = this.capas.get(1).getSalidas();
+        //System.out.println("Z_in: " + z_in_aux);
         /*z = f(z_in)*/
  /*En este punto ya tenemos z_in actualizado, falta pasarlo por la funcion para obtener las respuestas*/
         for (int i = 0; i < numCapaOculta; i++) {
@@ -211,6 +219,7 @@ public class RedNeuronal {
 
             respuestas.add(sigmoideBipolar(this.capas.get(1).getSalidas().get(i)));
         }
+        //System.out.println("Z: " + respuestas);
         this.capas.get(1).setSalidas(respuestas);
         this.actualizarEntradasCapaSalida();
     }
@@ -230,6 +239,7 @@ public class RedNeuronal {
         this.capas.get(2).actualizarCapa();
         /*Guardamos de forma auxiliar y_in*/
         this.y_in_aux = this.capas.get(2).getSalidas();
+        //System.out.println("Y_in: " + y_in_aux);
         /*z = f(z_in)*/
  /*En este punto ya tenemos z_in actualizado, falta pasarlo por la funcion para obtener las respuestas*/
         for (int i = 0; i < numSalidas; i++) {
@@ -237,6 +247,7 @@ public class RedNeuronal {
  /*La funcion de transferencia es la sigmoide bipolar*/
             respuestas.add(sigmoideBipolar(this.capas.get(2).getSalidas().get(i)));
         }
+        //System.out.println("Y: " + respuestas);
         this.capas.get(2).setSalidas(respuestas);
     }
 
@@ -252,6 +263,7 @@ public class RedNeuronal {
         for (int i = 0; i < numSalidas; i++) {
             errores.add((t.get(i) - y.get(i)) * derivadaSigmoideBipolar(this.y_in_aux.get(i)));
         }
+        //System.out.println("DeltaK: " + errores);
         return errores;
     }
 
@@ -263,9 +275,11 @@ public class RedNeuronal {
         ArrayList<Double> correcciones = new ArrayList<>();
         for (int i = 0; i < numSalidas; i++) {
             for (int j = 0; j < numCapaOculta; j++) {
+                //System.out.println("Multiplicacion: " + errores.get(i) + " "+ this.tasa + " " + this.capas.get(1).getSalidas().get(j));
                 correcciones.add(errores.get(i) * this.tasa * this.capas.get(1).getSalidas().get(j));
             }
         }
+        //System.out.println("CorreccionesWJK: " + correcciones);
         return correcciones;
     }
 
@@ -274,6 +288,7 @@ public class RedNeuronal {
         for (int i = 0; i < numSalidas; i++) {
             correccionSesgoSalida.add(errores.get(i) * this.tasa);
         }
+        //System.out.println("SesgoWJK: " + correccionSesgoSalida);
         return correccionSesgoSalida;
     }
 
@@ -317,10 +332,10 @@ public class RedNeuronal {
             for (int j = 0; j < numCapaOculta; j++) {
                 pesosNuevos.add(pesos.get(j) + correccionPesos.get(j));
             }
-            if(i==0)
-            System.out.println("Evolucion Pesos Salida" + i +":"  + pesosNuevos);
-            
-            this.capas.get(2).getNeuronas().get(i).setPesos(pesosNuevos);
+            if (i == 0) // //System.out.println("Evolucion Pesos Salida" + i +":"  + pesosNuevos);
+            {
+                this.capas.get(2).getNeuronas().get(i).setPesos(pesosNuevos);
+            }
             this.capas.get(2).getNeuronas().get(i).setSesgo(sesgo + correccionSesgo.get(i));
         }
     }
@@ -367,12 +382,13 @@ public class RedNeuronal {
             this.capas.get(2).calculoSalidasExplotacion();
         }
     }
-    
-    public double errorCuadratico(){
-        double sumatorio=0;
-        for(int i=0;i<numSalidas;i++){
-            sumatorio += Math.pow(this.patron.get(i)-this.capas.get(2).getSalidas().get(i),2);
+
+    public double errorCuadratico() {
+        double sumatorio = 0;
+        for (int i = 0; i < numSalidas; i++) {
+            ////System.out.println(i + " Patron: " + this.patron.get(i) + " Salida Y: " + this.capas.get(2).getSalidas().get(i));
+            sumatorio += Math.pow(this.patron.get(i) - this.capas.get(2).getSalidas().get(i), 2);
         }
-        return 0.5*sumatorio;
+        return 0.5 * sumatorio;
     }
 }

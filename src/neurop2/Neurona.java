@@ -63,7 +63,7 @@ public class Neurona {
     }
 
     public void setSalida(double salida) {
-        this.salida = salida;
+        this.salida=salida;
     }
 
     public void setEntrada(ArrayList<Double> entrada){

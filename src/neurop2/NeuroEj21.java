@@ -17,12 +17,13 @@ public class NeuroEj21 {
     public static void main(String[] args) {
         // TODO code application logic here
         //Creamos un determinado numero de neuronas.
-        String entrada = "xor.txt";
+        String entrada = "problema-real4.txt";
         int training = 100;
         double tasa = 0.02;
         String ocultas = "4";
         int maxEpocas = 3000;
         String salida = "salida.txt";
+        
 
         System.out.println(args.length);
         if (args.length == 0) {
@@ -92,9 +93,12 @@ public class NeuroEj21 {
                 /*Condicion de parada comprobamos las epocas*/
  /*Error cuadratico minimizado*/
                 double epocas = 0;
+                double errorCuadratico;
                 do {
-                    for (int i = 0; i < datosTrain.length; i++) {
+                    ArrayList<Double> cuadraticos = new ArrayList<>();
 
+                    for (int i = 0; i < datosTrain.length; i++) {
+                        //System.out.println("*******************");
                         /*En este punto tenemos la red neuronal creada*/
                         /**
                          * ***FEEDFORWARD****
@@ -132,10 +136,20 @@ public class NeuroEj21 {
                         red.actualizarOculta(correcciones2, correccionesSesgo2);
 
                         /*Paso 9: Condicion de parada (epocas)*/
+                        cuadraticos.add(red.errorCuadratico());
                     }
                     epocas++;
                     writer.println(red.errorCuadratico() + " " + red.getCapas().get(1).getPesos() + " " + red.getCapas().get(2).getPesos());
-                } while (red.errorCuadratico() > 0.05);
+
+                    errorCuadratico =0;
+                    for(int cua=0;cua<cuadraticos.size();cua++){
+                        errorCuadratico += cuadraticos.get(cua);
+                    }
+                    //System.out.println(errorCuadratico);
+                    errorCuadratico = errorCuadratico/cuadraticos.size();
+                    System.out.println(errorCuadratico);
+                } while (errorCuadratico>0.05 && epocas < 3000);
+                
                 System.out.println("Epocas realizadas: " + epocas);
                 writer.close();
                 /**
